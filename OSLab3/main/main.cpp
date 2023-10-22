@@ -1,6 +1,6 @@
 #include "../marker/marker.cpp";
 #include "../thread_manager/thread_manager.h"
-#include <windows.h>
+//#include <windows.h>
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -33,6 +33,8 @@ static DWORD WINAPI marker(LPVOID sId) {
 	vector<int> markedIndexes;
 	MarkerArgs* args = static_cast<MarkerArgs*>(sId);
 
+
+	// Waiting start of main
 	WaitForSingleObject(hStartEvent, INFINITE);
 
 	// start;
@@ -41,26 +43,33 @@ static DWORD WINAPI marker(LPVOID sId) {
 	int genNum;
 	bool isWorking = true;
 	while (isWorking) {
-		EnterCriticalSection(&cs);
 
 		genNum = rand();
 		genNum = genNum % n;
 
+		EnterCriticalSection(&cs);
+
 		if (arr[genNum] == 0) {
+			LeaveCriticalSection(&cs);
+
 			Sleep(5);
-			arr[genNum] = args->number;
+
+			EnterCriticalSection(&cs);
+				arr[genNum] = args->number;
+			LeaveCriticalSection(&cs);
+
 			Sleep(5);
 
 			markedIndexes.push_back(genNum);
 
-			LeaveCriticalSection(&cs);
+			
 		}
 		else {
 
 			LeaveCriticalSection(&cs);
 
 			EnterCriticalSection(&printCS);
-			cout << args->number << "\t" << markedIndexes.size() << "\t" << genNum << endl;
+				cout << args->number << "\t" << markedIndexes.size() << "\t" << genNum << endl;
 			LeaveCriticalSection(&printCS);
 
 			SetEvent(hMarkersNotPossibleEvent[args->number-1]);
@@ -71,9 +80,9 @@ static DWORD WINAPI marker(LPVOID sId) {
 			if (!markersContinueWork[args->number-1])
 			{	
 				EnterCriticalSection(&cs);
-				isWorking = false;
-				for (int i = 0; i < markedIndexes.size(); i++)
-					arr[markedIndexes[i]] = 0;
+					isWorking = false;
+					for (int i = 0; i < markedIndexes.size(); i++)
+						arr[markedIndexes[i]] = 0;
 				LeaveCriticalSection(&cs);
 			}
 			
@@ -84,7 +93,32 @@ static DWORD WINAPI marker(LPVOID sId) {
 
 	return 0;
 }
+int getToFinishThread(vector<int>& workingThreads) {
+	bool isOkFinish = false;
+	int toFinishNumber;
+	while (!isOkFinish) {
 
+		cout << endl;
+		cout << "Working threads:";
+		printVec(workingThreads);
+		cout << "To finish thread#: ";
+
+		cin >> toFinishNumber;
+
+
+		auto it = find(workingThreads.begin(), workingThreads.end(), toFinishNumber);
+		if (it != workingThreads.end()) {
+			workingThreads.erase(it);
+			isOkFinish = true;
+		}
+		else {
+			cout << "\nThread " << toFinishNumber << " not exists, or not working\n";
+		}
+
+	}
+
+	return toFinishNumber;
+}
 int main() {
 	int markerThreadAmount;
 	ThreadManager* managers;
@@ -111,10 +145,10 @@ int main() {
 		return 0;
 	}
 
-	
+
+	hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	managers = new ThreadManager[markerThreadAmount];
 	hMarkers = new HANDLE[markerThreadAmount];
-	hStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	hMarkersNotPossibleEvent = new HANDLE[markerThreadAmount];
 	hMarkersContinueWork = new HANDLE[markerThreadAmount];
 
@@ -136,6 +170,7 @@ int main() {
 	// Start markers
 	InitializeCriticalSection(&cs);
 	InitializeCriticalSection(&printCS);
+
 	SetEvent(hStartEvent);
 
 	while (workingThreads.size() != 0) {
@@ -144,48 +179,21 @@ int main() {
 
 		printArr();
 
-		isOkFinish = false;
-		while (!isOkFinish) {
-			EnterCriticalSection(&printCS);
+		toFinishNumber = getToFinishThread(workingThreads);
 
-			cout << endl;
-			cout << "Working threads:";
-			printVec(workingThreads);
-			cout << "To finish thread#: ";
-
-			LeaveCriticalSection(&printCS);
-			cin >> toFinishNumber;
-
-			
-			auto it = find(workingThreads.begin(), workingThreads.end(), toFinishNumber);
-			if (it != workingThreads.end()) {
-				workingThreads.erase(it);
-				isOkFinish = true;
-			}
-			else {
-				EnterCriticalSection(&printCS);
-				cout << "\nThread " << toFinishNumber << " not exists, or not working\n";
-				LeaveCriticalSection(&printCS);
-			}
-			EnterCriticalSection(&printCS);
-			cout << endl;
-			LeaveCriticalSection(&printCS);
-		}
-		
-
+		// mark thread as toFinish work
 		markersContinueWork[toFinishNumber - 1] = false;
-
 		SetEvent(hMarkersContinueWork[toFinishNumber - 1]);
 
+		// finishing and waiting
 		WaitForSingleObject(hMarkers[toFinishNumber - 1], INFINITE);
-
 		managers[toFinishNumber - 1].closeThread();
 
-		EnterCriticalSection(&printCS);
 		cout << "AFTER FINISH:";
 		printArr();
-		LeaveCriticalSection(&printCS);
 
+		// !!! One killed !!! Resetting as "NOT OK" only for left elements
+		// neccessary for main!!!
 		for (auto el : workingThreads) {
 			ResetEvent(hMarkersNotPossibleEvent[el - 1]);
 		}
