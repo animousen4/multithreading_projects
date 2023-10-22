@@ -20,7 +20,7 @@ static void printArr() {
 	cout << "[ARR]: " << endl;
 	for (int i = 0; i < n; i++)
 		cout << arr[i] << " ";
-	cout << endl << "[END OF ARR]" << endl;
+	cout << endl << "[END OF ARR]" << endl << endl;
 }
 
 static void printVec(vector<int>& vec) {
@@ -95,6 +95,7 @@ int main() {
 
 	if (n <= 0) {
 		cout << "N>0 should be at least" << endl;
+		system("pause");
 		return 0;
 	}
 
@@ -106,6 +107,7 @@ int main() {
 
 	if (markerThreadAmount < 0) {
 		cout << "marker thread amount>0 should be at least" << endl;
+		system("pause");
 		return 0;
 	}
 
@@ -177,8 +179,10 @@ int main() {
 
 		WaitForSingleObject(hMarkers[toFinishNumber - 1], INFINITE);
 
+		managers[toFinishNumber - 1].closeThread();
+
 		EnterCriticalSection(&printCS);
-		cout << "AFTER REMOVE:";
+		cout << "AFTER FINISH:";
 		printArr();
 		LeaveCriticalSection(&printCS);
 

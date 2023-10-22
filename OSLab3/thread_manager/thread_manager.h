@@ -8,9 +8,7 @@ private:
 		WaitForSingleObject(hThread, INFINITE);
 	}
 
-	void closeThread() {
-		CloseHandle(hThread);
-	}
+	
 
 public:
 	HANDLE createThread(LPTHREAD_START_ROUTINE function, LPVOID params) {
@@ -20,14 +18,9 @@ public:
 		return hThread;
 	}
 
-	void processThread() {
-		awaitThread();
-		closeThread();
+
+	void closeThread() {
+		CloseHandle(hThread);
 	}
-	
-	void doLifeCycle(LPTHREAD_START_ROUTINE function, LPVOID params) {
-		createThread(function, params);
-		awaitThread();
-		closeThread();
-	}
+
 };
