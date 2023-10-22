@@ -14,6 +14,7 @@ HANDLE* hMarkersContinueWork;
 bool* markersContinueWork;
 CRITICAL_SECTION cs;
 CRITICAL_SECTION printCS;
+CRITICAL_SECTION internPrintCS;
 
 static void printArr() {
 	cout << endl;
@@ -37,7 +38,7 @@ static DWORD WINAPI marker(LPVOID sId) {
 	// Waiting start of main
 	WaitForSingleObject(hStartEvent, INFINITE);
 
-	// start;
+	// start;z`
 
 	srand(args->number);
 	int genNum;
@@ -50,43 +51,45 @@ static DWORD WINAPI marker(LPVOID sId) {
 		EnterCriticalSection(&cs);
 
 		if (arr[genNum] == 0) {
-			LeaveCriticalSection(&cs);
 
 			Sleep(5);
-
-			EnterCriticalSection(&cs);
-				arr[genNum] = args->number;
-			LeaveCriticalSection(&cs);
-
+			arr[genNum] = args->number;
 			Sleep(5);
 
 			markedIndexes.push_back(genNum);
 
+			LeaveCriticalSection(&cs);
 			
 		}
 		else {
 
 			LeaveCriticalSection(&cs);
 
-			EnterCriticalSection(&printCS);
+			EnterCriticalSection(&internPrintCS);
 				cout << args->number << "\t" << markedIndexes.size() << "\t" << genNum << endl;
-			LeaveCriticalSection(&printCS);
+				SetEvent(hMarkersNotPossibleEvent[args->number - 1]);
+			LeaveCriticalSection(&internPrintCS);
 
-			SetEvent(hMarkersNotPossibleEvent[args->number-1]);
+			
 			
 			// Waiting for answer from main
 			WaitForSingleObject(hMarkersContinueWork[args->number-1], INFINITE);
 
+			EnterCriticalSection(&cs);
+
 			if (!markersContinueWork[args->number-1])
 			{	
-				EnterCriticalSection(&cs);
 					isWorking = false;
 					for (int i = 0; i < markedIndexes.size(); i++)
 						arr[markedIndexes[i]] = 0;
-				LeaveCriticalSection(&cs);
+				
 			}
+
+			LeaveCriticalSection(&cs);
 			
 		}
+
+		
 
 		
 	}
@@ -102,9 +105,7 @@ int getToFinishThread(vector<int>& workingThreads) {
 		cout << "Working threads:";
 		printVec(workingThreads);
 		cout << "To finish thread#: ";
-
 		cin >> toFinishNumber;
-
 
 		auto it = find(workingThreads.begin(), workingThreads.end(), toFinishNumber);
 		if (it != workingThreads.end()) {
@@ -155,8 +156,7 @@ int main() {
 
 
 	for (int i = 0; i < markerThreadAmount; i++) {
-		MarkerArgs* ma = new MarkerArgs{i+1};
-		hMarkers[i] = managers[i].createThread(marker, ma);
+		hMarkers[i] = managers[i].createThread(marker, new MarkerArgs{ i + 1 });
 		workingThreads.push_back(i + 1);
 		hMarkersNotPossibleEvent[i] = CreateEvent(NULL, TRUE, FALSE, NULL);
 		hMarkersContinueWork[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -169,15 +169,15 @@ int main() {
 	// Start markers
 	InitializeCriticalSection(&cs);
 	InitializeCriticalSection(&printCS);
+	InitializeCriticalSection(&internPrintCS);
 
 	SetEvent(hStartEvent);
 
 	while (workingThreads.size() != 0) {
 
 		WaitForMultipleObjects(markerThreadAmount, hMarkersNotPossibleEvent, true, INFINITE);
-
 		printArr();
-
+			
 		toFinishNumber = getToFinishThread(workingThreads);
 
 		// mark thread as toFinish work
@@ -204,6 +204,8 @@ int main() {
 
 	DeleteCriticalSection(&cs);
 	DeleteCriticalSection(&printCS);
+	DeleteCriticalSection(&internPrintCS);
+
 	cout << "The program has finished work\n";
 
 	system("pause");
