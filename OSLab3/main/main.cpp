@@ -151,8 +151,7 @@ int main() {
 	hMarkers = new HANDLE[markerThreadAmount];
 	hMarkersNotPossibleEvent = new HANDLE[markerThreadAmount];
 	hMarkersContinueWork = new HANDLE[markerThreadAmount];
-
-	markersContinueWork = new bool;
+	markersContinueWork = new bool[markerThreadAmount];
 
 
 	for (int i = 0; i < markerThreadAmount; i++) {
