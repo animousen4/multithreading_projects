@@ -16,6 +16,8 @@ CRITICAL_SECTION cs;
 CRITICAL_SECTION printCS;
 CRITICAL_SECTION internPrintCS;
 
+
+
 static void printArr() {
 	cout << endl;
 	cout << "[ARR]: " << endl;
@@ -67,10 +69,9 @@ static DWORD WINAPI marker(LPVOID sId) {
 
 			EnterCriticalSection(&internPrintCS);
 				cout << args->number << "\t" << markedIndexes.size() << "\t" << genNum << endl;
-				SetEvent(hMarkersNotPossibleEvent[args->number - 1]);
 			LeaveCriticalSection(&internPrintCS);
 
-			
+			SetEvent(hMarkersNotPossibleEvent[args->number - 1]);
 			
 			// Waiting for answer from main
 			WaitForSingleObject(hMarkersContinueWork[args->number-1], INFINITE);
@@ -175,7 +176,12 @@ int main() {
 
 	while (workingThreads.size() != 0) {
 
-		WaitForMultipleObjects(markerThreadAmount, hMarkersNotPossibleEvent, true, INFINITE);
+		//WaitForMultipleObjects(markerThreadAmount, hMarkersNotPossibleEvent, TRUE, INFINITE);
+		// up to 64
+
+		for (int mW = 0; mW < markerThreadAmount; mW++)
+			WaitForSingleObject(hMarkersNotPossibleEvent[mW], INFINITE);
+
 		printArr();
 			
 		toFinishNumber = getToFinishThread(workingThreads);
