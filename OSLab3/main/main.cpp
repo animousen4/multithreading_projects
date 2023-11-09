@@ -95,7 +95,7 @@ static DWORD WINAPI marker(LPVOID sId) {
 		
 	}
 
-	return 0;
+	return 0;	
 }
 int getToFinishThread(vector<int>& workingThreads) {
 	bool isOkFinish = false;
