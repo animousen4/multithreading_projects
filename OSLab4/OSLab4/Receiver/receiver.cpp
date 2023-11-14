@@ -13,15 +13,20 @@ int main(char** args, int argCount) {
 	int messagesAmount;
 	int senderAmount;
 
+	wcout << L"Enter file Name: ";
 	wcin.getline(fileName, maxFileNameSize);
+
+	wcout << L"Enter messages Amount: ";
 	wcin >> messagesAmount;
+
+	wcout << L"Enter process Amount: ";
 	wcin >> senderAmount;
 
 	wofstream binFile("file.bin", ios::binary);
 
 	ProcessManager* managers = new ProcessManager[senderAmount];
 	for (int i = 0; i < senderAmount; i++) {
-		managers[i].createApp(L"Sender.exe", fileName);
+		wcout << managers[i].createApp(L"Sender.exe", fileName) << " ";
 	}
 
 
