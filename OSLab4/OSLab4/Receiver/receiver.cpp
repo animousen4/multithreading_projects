@@ -111,6 +111,7 @@ int main(char** args, int argCount) {
 		else
 			if (input == "r") {
 				readFromFile(fileName, fileMutex, messageAmountSemaphore);
+				cout << endl;
 			}
 				else
 					cout << "Not supported command. Try again\n";

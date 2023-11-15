@@ -10,11 +10,13 @@ bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& mess
 	if (message.length() > 20)
 		return false;
 
+	// -1 message or Wait
+
+	WaitForSingleObject(messageAmountSemaphore, INFINITE);
 	// wait for not busy file
 	WaitForSingleObject(fileMutex, INFINITE);
 
-	// -1 message or Wait
-	WaitForSingleObject(messageAmountSemaphore, INFINITE);
+	
 
 	fstream file(fileName, ios::binary | ios::app | ios::out);
 	file.write(message.c_str(), messageSize);
