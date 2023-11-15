@@ -5,7 +5,7 @@
 #include <windows.h>
 #include "../consts.cpp"
 using namespace std;
-
+string programName = "[SENDER]";
 bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& messageAmountSemaphore) {
 	if (message.length() > 20)
 		return false;
@@ -28,18 +28,31 @@ bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& mess
 }
 int main(int argCount, char** args) {
 
-	HANDLE mutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, fileMutexName);
-	//HANDLE semaphore = 
-	cout << hStartEvent << "\n";
+	HANDLE fileMutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, fileMutexName);
+	HANDLE messageAmountSemaphore = OpenSemaphoreA(SEMAPHORE_ALL_ACCESS, TRUE, messageAmountSemaphoreName);
+	cout << "File: " << args[1] << endl;
+	cout << "Commands:\nf - finish\ns - send MESSAGE20\n\n";
 
-	WaitForSingleObject(hStartEvent, INFINITE);
+	string input;
+	while (true) {
+		cout << programName + "$ ";
+		cin >> input;
 
-	for (int i = 0; i < argCount; i++)
-		cout << args[i] << " ";
+		if (input == "f")
+			break;
+		if (input == "s") {
+			string message;
+			cin >> message;
+			sendMessage(args[1], message, fileMutex, messageAmountSemaphore);
+		}
+		else
+			cout << "Not supported command. Try again\n";
+		
+	}
 
-	cout << argCount;
+	cout << "Program has finished work\n";
 
-
+	cout << endl;
 	system("pause");
 
 	return 0;

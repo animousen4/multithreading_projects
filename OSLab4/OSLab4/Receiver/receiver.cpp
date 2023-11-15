@@ -71,6 +71,8 @@ void readFromFile(wchar_t* fileName, HANDLE& fileMutex, HANDLE& messageAmountSem
 	// out read message;
 	cout << message;
 }
+
+string programName = "[RECEIV]";
 int main(char** args, int argCount) {
 	wchar_t* fileName = new wchar_t[maxFileNameSize];
 	wchar_t* message;
@@ -90,32 +92,37 @@ int main(char** args, int argCount) {
 	wofstream binFile("file.bin", ios::binary);
 
 	ProcessManager* managers = new ProcessManager[senderAmount];
-	HANDLE fileMutex = CreateMutex(NULL, TRUE, fileMutexName);
+	HANDLE fileMutex = CreateMutex(NULL, FALSE, fileMutexName);
 	HANDLE messageAmountSemaphore = CreateSemaphore(NULL, messagesAmount, messagesAmount, messageAmountSemaphoreName);
 
 	for (int i = 0; i < senderAmount; i++) {
 		wcout << managers[i].createApp(L"Sender.exe", fileName) << " ";
 	}
 
-	string command;
+
+	cout << "Commands:\nf - finish\nr - read\n\n";
+	string input;
 
 	while (true) {
-		cin >> command;
-		if (command == "f")
+		cout << programName + "$ ";
+		cin >> input;
+		if (input == "f")
 			break;
-		if (command == "r") {
-			readFromFile(fileName, fileMutex, messageAmountSemaphore);
-		}
+		else
+			if (input == "r") {
+				readFromFile(fileName, fileMutex, messageAmountSemaphore);
+			}
+				else
+					cout << "Not supported command. Try again\n";
 
 	}
 
+	CloseHandle(fileMutex);
+	CloseHandle(messageAmountSemaphore);
 
+	cout << endl;
+	system("pause");
 
-	
-
-
-	getwchar();
-
-
+	return 0;
 
 }
