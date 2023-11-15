@@ -7,7 +7,8 @@ using namespace std;
 
 
 int main(int argCount, char** args) {
-	HANDLE hStartEvent = OpenEvent(SYNCHRONIZE, FALSE, startSenderName);
+
+	HANDLE hStartEvent = OpenEventW(EVENT_ALL_ACCESS, TRUE, TEXT(L"hStartEvent"));
 
 	cout << hStartEvent << "\n";
 
@@ -20,5 +21,7 @@ int main(int argCount, char** args) {
 
 
 	system("pause");
+
+	return 0;
 
 }
