@@ -63,8 +63,13 @@ void readFromFile(wchar_t* fileName, HANDLE& fileMutex, HANDLE& messageAmountSem
 
 		// releasing file
 		ReleaseMutex(fileMutex);
-
 	}
+
+	// +1 SLOT TO MESSAGES
+	ReleaseSemaphore(messageAmountSemaphore, 1, NULL);
+
+	// out read message;
+	cout << message;
 }
 int main(char** args, int argCount) {
 	wchar_t* fileName = new wchar_t[maxFileNameSize];
@@ -99,7 +104,6 @@ int main(char** args, int argCount) {
 		if (command == "f")
 			break;
 		if (command == "r") {
-
 			readFromFile(fileName, fileMutex, messageAmountSemaphore);
 		}
 
