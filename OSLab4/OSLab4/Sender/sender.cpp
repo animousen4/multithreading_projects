@@ -11,8 +11,8 @@ bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& mess
 		return false;
 
 	// -1 message or Wait
-
 	WaitForSingleObject(messageAmountSemaphore, INFINITE);
+
 	// wait for not busy file
 	WaitForSingleObject(fileMutex, INFINITE);
 
@@ -29,12 +29,13 @@ bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& mess
 	return true;
 }
 int main(int argCount, char** args) {
-
+	HANDLE startSemaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, TRUE, args[2]);
 	HANDLE fileMutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, fileMutexName);
 	HANDLE messageAmountSemaphore = OpenSemaphoreA(SEMAPHORE_ALL_ACCESS, TRUE, messageAmountSemaphoreName);
 	cout << "File: " << args[1] << endl;
 	cout << "Commands:\nf - finish\ns - send MESSAGE20\n\n";
 
+	ReleaseSemaphore(startSemaphore, 1, NULL);
 	string input;
 	while (true) {
 		cout << programName + "$ ";

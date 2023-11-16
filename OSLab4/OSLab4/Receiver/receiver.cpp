@@ -18,6 +18,7 @@ const int maxFileNameSize = 30;
 // NON-SIGNAL - VALUE=0
 // -1 IN WAITFOR...
 // +N in ReleaseSemaphore(HANDLE, LONG, LPLONG)
+
 string getLeftMessages(fstream& file) {
 	string leftMessages;
 	leftMessages += file.get();
@@ -34,7 +35,7 @@ string getLeftMessages(fstream& file) {
 	return leftMessages;
 }
 
-void rewriteLeftMessages(fstream& file, wchar_t* fileName, string& messages) {
+void rewriteLeftMessages(fstream& file, string fileName, string& messages) {
 	file.open(fileName, ios::binary | ios::out | ios::trunc);
 
 	file.write(messages.c_str(), messages.length());
@@ -43,7 +44,7 @@ void rewriteLeftMessages(fstream& file, wchar_t* fileName, string& messages) {
 	file.close();
 }
 
-void readFromFile(wchar_t* fileName, HANDLE& fileMutex, HANDLE& messageAmountSemaphore) {
+void readFromFile(string fileName, HANDLE& fileMutex, HANDLE& messageAmountSemaphore) {
 	bool fileSuccess = false;
 	char message[messageSize];
 	fstream file;
@@ -74,31 +75,36 @@ void readFromFile(wchar_t* fileName, HANDLE& fileMutex, HANDLE& messageAmountSem
 
 string programName = "[RECEIV]";
 int main(char** args, int argCount) {
-	wchar_t* fileName = new wchar_t[maxFileNameSize];
-	wchar_t* message;
+	string fileName;
+	char* message;
 
 	int messagesAmount;
 	int senderAmount;
 
-	wcout << L"Enter file Name: ";
-	wcin.getline(fileName, maxFileNameSize);
+	cout << "Enter file Name: ";
+	cin >> fileName;
 
-	wcout << L"Enter messages Amount: ";
-	wcin >> messagesAmount;
+	cout << "Enter messages Amount: ";
+	cin >> messagesAmount;
 
-	wcout << L"Enter process Amount: ";
-	wcin >> senderAmount;
-
-	wofstream binFile("file.bin", ios::binary);
+	cout << "Enter process Amount: ";
+	cin >> senderAmount;
 
 	ProcessManager* managers = new ProcessManager[senderAmount];
+
+	// To wait for everyone is ready
+	HANDLE* startHandlersSemaphores = new HANDLE[senderAmount];
 	HANDLE fileMutex = CreateMutex(NULL, FALSE, fileMutexName);
 	HANDLE messageAmountSemaphore = CreateSemaphore(NULL, messagesAmount, messagesAmount, messageAmountSemaphoreName);
-
 	for (int i = 0; i < senderAmount; i++) {
-		wcout << managers[i].createApp(L"Sender.exe", fileName) << " ";
+		string semName = string(startSemaphoreName) + "_" + to_string(i);
+		startHandlersSemaphores[i] = CreateSemaphore(NULL, 0, 1, semName.c_str());
+		managers[i].createApp("Sender.exe", fileName);
 	}
 
+	cout << "Waiting for all programms to be opened\n";
+	//WaitForSingleObject()
+	cout << "All programms has been opened.\nStarted\n\n";
 
 	cout << "Commands:\nf - finish\nr - read\n\n";
 	string input;

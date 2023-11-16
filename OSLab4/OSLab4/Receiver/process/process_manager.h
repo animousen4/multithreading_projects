@@ -1,11 +1,11 @@
 #include <Windows.h>
-
+#include <string>
 
 class ProcessManager {
 
 public:
     ProcessManager() :
-        si(new STARTUPINFOW()),
+        si(new STARTUPINFO()),
         piApp(new PROCESS_INFORMATION())
     {}
 
@@ -14,19 +14,21 @@ public:
         delete piApp;
     }
 
-    bool createApp(const wchar_t* appName, wchar_t* arguments) {
+    bool createApp(std::string appName, std::string arguments) {
 
         clearMem();
+        char* startUpArgs = new char[100];
+        std::string command = appName + " " + arguments;
 
-        wchar_t consoleCommand[80] = L"";
+        for (int i = 0; i < command.length(); i++) {
+            startUpArgs[i] = command[i];
+        }
 
-        wcscat_s(consoleCommand, appName);
-        wcscat_s(consoleCommand, L" ");
-        wcscat_s(consoleCommand, arguments);
+        startUpArgs[command.size()] = 0;
 
-        return CreateProcessW(
+        return CreateProcessA(
             NULL,
-            consoleCommand,
+            startUpArgs,
             NULL,
             NULL,
             TRUE,
@@ -38,12 +40,12 @@ public:
         );
     }
 private:
-    STARTUPINFOW* si;
+    STARTUPINFO* si;
     PROCESS_INFORMATION* piApp;
 
     void clearMem() {
-        ZeroMemory(si, sizeof(STARTUPINFOW));
-        si->cb = sizeof(STARTUPINFOW);
+        ZeroMemory(si, sizeof(STARTUPINFO));
+        si->cb = sizeof(STARTUPINFO);
     }
     void closeApp() {
         CloseHandle(piApp->hProcess);
