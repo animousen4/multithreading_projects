@@ -29,7 +29,7 @@ string getLeftMessages(fstream& file) {
 	}
 
 	if (haveMessages) {
-		leftMessages.erase(leftMessages.end() - 1);
+		leftMessages.erase(leftMessages.end());
 	}
 
 	return leftMessages;
@@ -38,7 +38,7 @@ string getLeftMessages(fstream& file) {
 void rewriteLeftMessages(fstream& file, string fileName, string& messages) {
 	file.open(fileName, ios::binary | ios::out | ios::trunc);
 
-	file.write(messages.c_str(), messages.length());
+	file.write(messages.c_str(), messages.length() - 1);
 	file.flush();
 
 	file.close();
@@ -50,7 +50,7 @@ void readFromFile(string fileName, HANDLE& fileMutex, HANDLE& messageAmountSemap
 	fstream file;
 	while (!fileSuccess) {
 		// Wait other to be finished
-		WaitForSingleObject(fileMutex, INFINITE);
+ 		WaitForSingleObject(fileMutex, INFINITE);
 		file.open(fileName, ios::binary | ios::in);
 		file.read(message, messageSize);
 		
@@ -64,6 +64,8 @@ void readFromFile(string fileName, HANDLE& fileMutex, HANDLE& messageAmountSemap
 
 		// releasing file
 		ReleaseMutex(fileMutex);
+		
+		//cout << "waiting";
 	}
 
 	// +1 SLOT TO MESSAGES
