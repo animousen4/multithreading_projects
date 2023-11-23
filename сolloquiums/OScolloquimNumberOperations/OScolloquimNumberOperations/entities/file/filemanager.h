@@ -4,35 +4,26 @@
 #include "../path_maker/path_maker.h"
 class FileManager {
 public:
-	FileManager(std::string dir, std::string filePrefix, int amount) {
-		this->dir = dir;
-		this->filePrefix = filePrefix;
-	}
+	std::vector<std::string> filesPaths;
 
 	std::vector<FileData> getFileDataSequence() {
+		std::vector<FileData> files;
 
+		for (auto path : filesPaths)
+			files.push_back(readFile(path));
+
+		return files;
 	}
 
 private:
-	std::string dir;
-	std::string filePrefix;
-	std::string filePostfix;
+	std::string path;
 	
-	std::string getPath(int& fileIndex) {
-		PathmakerBuilder builder;
-		std::string path = builder
-			.setDir(dir)
-			.setFilePrefix(filePrefix)
-			.setFilePostfix(
-				std::to_string(fileIndex)
-			)
-			.build();
-	}
-	FileData readFile(int fileIndex) {
+
+	FileData readFile(std::string path) {
 		FileData fileData;
 
 		std::ifstream file(
-			getPath(fileIndex)
+			path
 		);
 
 		file >> fileData.operation;

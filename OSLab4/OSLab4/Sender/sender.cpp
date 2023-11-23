@@ -25,7 +25,7 @@ bool sendMessage(char* fileName, string message, HANDLE& fileMutex, HANDLE& mess
 
 	// make file not busy
 	ReleaseMutex(fileMutex);
-
+		
 	return true;
 }
 int main(int argCount, char** args) {
