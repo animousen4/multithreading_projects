@@ -5,25 +5,20 @@
 #include "../file/filemanager.h"
 
 class DataProcessor {
+public:
 
-	FileManager fileManager;
+	FileManager* manager;
 
-	void process() {
-		
+	DataProcessor(FileManager* manager) {
+		this->manager = manager;
 	}
 
-	std::vector<std::string> getInputFileIndexes() {
-		std::vector<std::string> files;
-
-		std::string path;
-		for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-			path = entry.path().string();
-			if (std::regex_match(path, validFileRegex))
-				files.push_back(path);
-		
-		}
-
-		return files;
-			
+	double getSum() {
+	
 	}
+private:
+
+
+	
+	
 };
