@@ -7,7 +7,7 @@ public:
 		this->manager = manager;
 	}
 	double getResult() {
-		std::vector<FileData> files = manager->getFileDataSequence();
+		std::vector<FileData*> files = manager->getFileDataSequence();
 		ThreadManager threadManager(files.size());
 		
 		std::vector<ActionProcessorArgs> args = mapToArgs(files);
@@ -18,19 +18,21 @@ public:
 
 	}
 
-	std::vector<ActionProcessorArgs> mapToArgs(std::vector<FileData>& files) {
+	
+private:
+	FileManager* manager;
+
+	std::vector<ActionProcessorArgs> mapToArgs(std::vector<FileData*>& files) {
 		std::vector<ActionProcessorArgs> args;
 		for (auto fileData : files)
-			args.push_back(ActionProcessorArgs{ &fileData });
+			args.push_back(ActionProcessorArgs{ fileData });
 		return args;
 	}
 
 	double calculate(std::vector<ActionProcessorArgs> argsCalculated) {
-		double res;
+		double res = 0;
 		for (auto arg : argsCalculated)
-			res += arg.result;
+			res += *arg.result;
+		return res;
 	}
-private:
-	FileManager* manager;
-
 };

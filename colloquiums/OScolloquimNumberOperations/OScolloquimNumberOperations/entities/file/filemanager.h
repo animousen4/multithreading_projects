@@ -1,48 +1,64 @@
+#pragma once
 #include <string>
 #include "../file_data/file_data.h"
 #include <fstream>
 #include "../path_maker/path_maker.h"
 #include <filesystem>
 #include <regex>
-#include "../consts/regexpr.cpp"
+#include <iostream>
 class FileManager {
 public:
 	
-	FileManager(std::string dir) {
+	FileManager(std::string dir, std::regex validFileRegex) {
 		this->dir = dir;
+		this->validFileRegex = validFileRegex;
 	}
 
-	std::vector<FileData> getFileDataSequence() {
+	std::vector<FileData*> getFileDataSequence() {
 		auto dirs = getInputFileDirs();
 		return getFileDataSequence(dirs);
 	}
 
+	void writeOutput(std::string fileName, double result) {
+		std::ofstream file(fileName);
+		file << result;
+		file.close();
+	}
+
+	void outFoundFiles() {
+		auto files = getInputFileDirs();
+		if (files.empty())
+			std::cout << "Not found";
+		else
+			for (auto el : files)
+				std::cout << "\t" << el << "\n";
+	}
 	
 
 private:
 	std::string dir;
-
-	FileData readFile(std::string path) {
-		FileData fileData;
+	std::regex validFileRegex;
+	FileData* readFile(std::string path) {
+		FileData* fileData = new FileData;
 
 		std::ifstream file(
 			path
 		);
 
-		file >> fileData.operation;
+		file >> fileData->operation;
 
 		double num;
 		while (file >> num)
-			fileData.sequence.push_back(num);
+			fileData->sequence.push_back(num);
 		
 		file.close();
 
 		return fileData;
 		
 	}
-	std::vector<FileData> getFileDataSequence(std::vector<std::string> filesPaths) {
+	std::vector<FileData*> getFileDataSequence(std::vector<std::string> filesPaths) {
 
-		std::vector<FileData> files;
+		std::vector<FileData*> files;
 
 		for (auto path : filesPaths)
 			files.push_back(readFile(path));

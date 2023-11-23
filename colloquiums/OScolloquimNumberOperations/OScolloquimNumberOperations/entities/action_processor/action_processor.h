@@ -1,10 +1,11 @@
 #include <Windows.h>
 #include "../file/filemanager.h"
 #include <functional>
-#include "../opercode.cpp"
+#include "opercode.cpp"
+#pragma once
 struct ActionProcessorArgs {
 	FileData* fileData;
-	double result = 0;
+	double* result = new double;
 };
 class ActionProcessor {
 public:
@@ -19,7 +20,9 @@ public:
 		for (auto v : fileData.sequence)
 			func(res, v);
 		
-		args.result = res;
+		*args.result = res;
+
+		return 0;
 	}
 
 	static std::function<void(double& total, double& cur)> getFunction(int code, double& initTotal) {
