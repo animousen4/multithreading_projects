@@ -7,6 +7,7 @@ struct ActionProcessorArgs {
 	double result = 0;
 };
 class ActionProcessor {
+public:
 	static DWORD WINAPI process(LPVOID sId) {
 		ActionProcessorArgs args = *static_cast<ActionProcessorArgs*>(sId);
 		FileData fileData = *args.fileData;
@@ -19,8 +20,6 @@ class ActionProcessor {
 			func(res, v);
 		
 		args.result = res;
-
-		return 0;
 	}
 
 	static std::function<void(double& total, double& cur)> getFunction(int code, double& initTotal) {
