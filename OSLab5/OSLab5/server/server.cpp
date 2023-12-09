@@ -70,7 +70,7 @@ int main()
 		processManagers[i].createApp("Client.exe");
 		threadArgs[i] = ThreadArgs{ hNamedPipe, fileMutex, fileName, employees, studentAmount};
 		threads[i] = threadManagers[i].createThread(threadFunc, (LPVOID)&threadArgs[i]);
-		cout << "The server is waiting for connection with a client " << endl;
+		cout << "Waiting client #" << i + 1 << " ... ";
 
 		bool res = ConnectNamedPipe(
 			hNamedPipe,
@@ -78,7 +78,7 @@ int main()
 		);
 
 		if (res)
-			cout << "Connection estabilished with client #" << i + 1 << endl;
+			cout << "Connection SUCCESS client #" << i + 1 << endl;
 		else
 			cout << "Connection FAILED with client #" << i + 1 << " Error: " << GetLastError() << endl;
 	}

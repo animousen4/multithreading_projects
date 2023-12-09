@@ -80,13 +80,24 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 					&dwBytesRead, // then read bytes
 					(LPOVERLAPPED)NULL // sync
 				);
-
-				cout << "Received modified employee: " << toReadModifiedEmpl;
-
 				WaitForSingleObject(args.fileMutex, INFINITE);
 				{
-					cout << "Modifying in file...";
-					//ofsteam
+					cout << "Received modified employee: " << toReadModifiedEmpl.id << toReadModifiedEmpl.name << toReadModifiedEmpl.hours << endl;
+
+					for (int i = 0; i < args.amount; i++) {
+						if (toReadModifiedEmpl.id == args.employees[i].id)
+							args.employees[i] = toReadModifiedEmpl;
+					}
+				
+					cout << "Modifying in file... ";
+					ofstream file(args.fileName, ios::binary | ios::trunc);
+
+					for (int i = 0; i < args.amount; i++) {
+						file.write((char*)&args.employees[i], sizeof(Employee));
+					}
+
+					file.close();
+					cout << "Successfully modified!";
 
 				}
 				ReleaseMutex(args.fileMutex);
