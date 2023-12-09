@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (Server "server.h" "server.cpp" "process/process_manager.h")
+add_executable (Server "server.h" "server.cpp" "process/process_manager.h" "thread/thread_manager.h" "thread/thread_func.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Server PROPERTY CXX_STANDARD 20)
