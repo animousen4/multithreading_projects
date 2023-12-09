@@ -3,6 +3,8 @@
 #include <string>
 #include <fstream>
 #include "../entities/Employee.cpp";
+#include "../entities/Command.cpp"
+#include "../entities/EmployeeResponse.cpp"
 using namespace std;
 
 int main()
@@ -31,28 +33,31 @@ int main()
 		return 0;
 	}
 	// write to channel
-	for (int i = 0; i < 10; i++)
-	{
-		DWORD dwBytesWritten;
-		if (!WriteFile(
-
+	DWORD dwBytesWritten;
+	DWORD dwBytesRead;
+	Command cm;
+	EmployeeResponse resp;
+	bool read;
+	while (true) {
+		cin >> cm.command >> cm.arg;
+		WriteFile(
 			hNamedPipe,
-			&i, // data
-			sizeof(i), // data size
+			(char*)&cm, // data
+			sizeof(Command), // data size
 			&dwBytesWritten, // written
 			(LPOVERLAPPED)NULL // sync
-		))
-		{
+		);
 
-			cerr << "Writing to the named pipe failed: " << endl
-				<< "The last error code: " << GetLastError() << endl;
-			cout << "Press any char to finish the client: ";
-			cin >> c;
-			CloseHandle(hNamedPipe);
-			return 0;
-		}
-		cout << "The number " << i << " is written to the named pipe." << endl;
-		Sleep(1000);
+		read = ReadFile(
+			hNamedPipe,
+			&resp, // to read
+			sizeof(EmployeeResponse), // to read
+			&dwBytesRead, // then read bytes
+			(LPOVERLAPPED)NULL // sync
+		);
+
+		if (!read)
+			return;
 	}
 	CloseHandle(hNamedPipe);
 

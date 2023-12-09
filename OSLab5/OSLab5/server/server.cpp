@@ -4,6 +4,7 @@
 #include "../entities/Employee.cpp";
 #include "process/process_manager.h"
 #include "../entities/Command.cpp"
+#include "../entities/EmployeeResponse.cpp"
 using namespace std;
 
 
@@ -39,19 +40,17 @@ int main()
 	for (int i = 0; i < studentAmount; i++)
 		cin >> employees[i];
 
-	if (studentAmount >= 0) {
-		// creating bin file
-		
-		ofstream binFile(fileName, ios::binary);
-		for (int i = 0; i < studentAmount; i++) {
-			binFile.write((char*)(&employees[i]), sizeof(Employee));
-		}
 
-		binFile.close();
+	// creating bin file
+		
+	ofstream binFile(fileName, ios::binary);
+	for (int i = 0; i < studentAmount; i++) {
+		binFile.write((char*)(&employees[i]), sizeof(Employee));
 	}
-	else {
-		cout << "Students amount is negative, using old file" << endl;
-	}
+
+	binFile.close();
+	
+
 
 
 	for (int i = 0; i < clientAmount; i++)
@@ -77,7 +76,7 @@ int main()
 		"\\\\.\\pipe\\demo_pipe",
 		PIPE_ACCESS_DUPLEX, // READ AND WRITE
 		PIPE_TYPE_MESSAGE | PIPE_WAIT, // sync
-		1, // amount of channels
+		clientAmount, // amount of channels
 		0, // 
 		0, // 
 		INFINITE, // inf
@@ -105,28 +104,37 @@ int main()
 		cin >> c;
 		return 0;
 	}
-
+	cout << "Connection estabilished. " << endl;
 	DWORD dwBytesRead;
 	Command cm;
-	
-	ReadFile(
-		hNamedPipe,
-		&cm, // to read
-		sizeof(Command), // to read
-		&dwBytesRead, // then read bytes
-		(LPOVERLAPPED)NULL // sync
-	);
-
-	if (cm.command[0] == 'r') {
-		Employee outEmpl;
-		DWORD dwBytesWrite;
-		WriteFile(
+	while (true) {
+		bool read = ReadFile(
 			hNamedPipe,
-			(char*)&outEmpl, // to out
-			sizeof(Employee), // to write Bytes
-			&dwBytesWrite, // then written bytes
+			&cm, // to read
+			sizeof(Command), // to read
+			&dwBytesRead, // then read bytes
 			(LPOVERLAPPED)NULL // sync
 		);
+
+		if (!read)
+			break;
+
+		if (cm.command[0] == 'r') {
+			cout << "Reading from file..." << endl;
+			cout << "Received command: " << cm.command << " " << cm.arg << endl;
+			EmployeeResponse outEmpl{true, Employee()};
+			DWORD dwBytesWrite;
+
+			WriteFile(
+				hNamedPipe,
+				(char*)&outEmpl, // to out
+				sizeof(EmployeeResponse), // to write Bytes
+				&dwBytesWrite, // then written bytes
+				(LPOVERLAPPED)NULL // sync
+			);
+
+
+		}
 	}
 
 
