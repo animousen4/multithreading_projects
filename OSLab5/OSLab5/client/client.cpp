@@ -11,6 +11,7 @@ int main()
 {	
 	cout << "[Client]" << endl;
 	HANDLE hNamedPipe;
+	HANDLE fileMutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, "fileMutex");
 	char pipeName[] = "\\\\.\\pipe\\demo_pipe";
 
 	if (!WaitNamedPipe(TEXT("\\\\.\\pipe\\demo_pipe"), NMPWAIT_WAIT_FOREVER)) {
@@ -66,8 +67,10 @@ int main()
 
 			if (resp.ok) {
 				cout << resp.empl.id << " " << resp.empl.name << " " << resp.empl.hours << endl;
-
+				
 				if (cm.command[0] == 'm') {
+					WaitForSingleObject(fileMutex, INFINITE);
+
 					Employee newEmpl;
 					bool validated = false;
 
@@ -95,6 +98,8 @@ int main()
 						&dwBytesWritten,
 						(LPOVERLAPPED)NULL
 					);
+
+					ReleaseMutex(fileMutex);
 				}
 			}
 			else {

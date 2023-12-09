@@ -79,7 +79,7 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 					&dwBytesRead, // then read bytes
 					(LPOVERLAPPED)NULL // sync
 				);
-				WaitForSingleObject(args.fileMutex, INFINITE);
+				//WaitForSingleObject(args.fileMutex, INFINITE);
 				{
 					cout << "Received modified employee: " 
 						<< toReadModifiedEmpl.id
@@ -102,7 +102,7 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 					cout << "Successfully modified!" << endl;
 
 				}
-				ReleaseMutex(args.fileMutex);
+				//ReleaseMutex(args.fileMutex);
 				
 			}
 			else {

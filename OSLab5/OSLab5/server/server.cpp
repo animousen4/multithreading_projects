@@ -21,7 +21,7 @@ int main()
 	HANDLE* threads;
 	ThreadArgs* threadArgs;
 
-	HANDLE fileMutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, NULL);
+	HANDLE fileMutex = CreateMutexA(NULL, FALSE, "fileMutex");
 
 	cout << "fileName: ";
 	cin >> fileName;
