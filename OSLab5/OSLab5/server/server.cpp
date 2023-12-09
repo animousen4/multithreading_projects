@@ -68,7 +68,7 @@ int main()
 
 
 		processManagers[i].createApp("Client.exe");
-		threadArgs[i] = ThreadArgs{ hNamedPipe, fileMutex, fileName, employees, studentAmount};
+		threadArgs[i] = ThreadArgs{ hNamedPipe, fileMutex, fileName, employees, studentAmount, i + 1};
 		
 		cout << "Waiting client #" << i + 1 << " ... ";
 		bool res = ConnectNamedPipe(
@@ -82,7 +82,7 @@ int main()
 		else
 			cout << "Connection FAILED; Error: " << GetLastError() << endl;
 	}
-	
+	cout << "[SERVER] " << endl;
 	WaitForMultipleObjects(clientAmount, threads, TRUE, INFINITE);
 
 	return 0;

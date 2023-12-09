@@ -16,6 +16,7 @@ struct ThreadArgs {
 	Employee* employees;
 	int amount;
 	
+	int clientNum;
 };
 
 static EmployeeResponse getById(Employee* employees, int amount, int id) {
@@ -43,7 +44,6 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 			break;
 
 		if (cm.command[0] == 'r') {
-			cout << "Reading from file..." << endl;
 			cout << "Received command: " << cm.command << " " << cm.arg << endl;
 			EmployeeResponse outEmpl = getById(args.employees, args.amount, cm.arg);
 			DWORD dwBytesWrite;
@@ -81,7 +81,10 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 				);
 				WaitForSingleObject(args.fileMutex, INFINITE);
 				{
-					cout << "Received modified employee: " << toReadModifiedEmpl.id << toReadModifiedEmpl.name << toReadModifiedEmpl.hours << endl;
+					cout << "Received modified employee: " 
+						<< toReadModifiedEmpl.id
+						<< " " << toReadModifiedEmpl.name
+						<< " " << toReadModifiedEmpl.hours << endl;
 
 					for (int i = 0; i < args.amount; i++) {
 						if (toReadModifiedEmpl.id == args.employees[i].id)
@@ -96,14 +99,14 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 					}
 
 					file.close();
-					cout << "Successfully modified!";
+					cout << "Successfully modified!" << endl;
 
 				}
 				ReleaseMutex(args.fileMutex);
 				
 			}
 			else {
-				cout << "No such employee, nothing to modify";
+				cout << "No such employee, nothing to modify" << endl;
 			}
 		}
 		else {
@@ -111,5 +114,6 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 		}
 	}
 
+	cout << "Client #" << args.clientNum << " finished work" << endl;
 	return 0;
 }

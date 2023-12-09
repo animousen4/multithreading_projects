@@ -9,9 +9,7 @@ using namespace std;
 
 int main()
 {	
-
-
-	char c; 
+	cout << "[Client]" << endl;
 	HANDLE hNamedPipe;
 	char pipeName[] = "\\\\.\\pipe\\demo_pipe";
 
@@ -34,8 +32,8 @@ int main()
 	{
 		cerr << "Connection with the named pipe failed." << endl
 			<< "The last error code: " << GetLastError() << endl;
-		cout << "Press any char to finish the client: ";
-		cin >> c;
+		system("pause");
+
 		return 0;
 	}
 	// write to channel
@@ -66,22 +64,41 @@ int main()
 			if (!read)
 				break;
 
-			cout << resp.empl << endl;
+			if (resp.ok) {
+				cout << resp.empl.id << " " << resp.empl.name << " " << resp.empl.hours << endl;
 
-			if (cm.command[0] == 'm') {
-				Employee newEmpl;
-				cout << "Enter the changes:" << endl;
-				cout << "id\tname\thours" << endl;
+				if (cm.command[0] == 'm') {
+					Employee newEmpl;
+					bool validated = false;
 
-				cin >> newEmpl;
+					while (!validated) {
+						cout << "Enter the changes:" << endl;
+						cout << "name\thours" << endl;
+						newEmpl.id = cm.arg;
+						string name;
+						cin >> name >> newEmpl.hours;
 
-				WriteFile(
-					hNamedPipe,
-					(char*)&newEmpl,
-					sizeof(Employee),
-					&dwBytesWritten,
-					(LPOVERLAPPED)NULL
-				);
+						if (name.length() < nameSize) {
+							validated = true;
+							strcpy(newEmpl.name, name.c_str());
+						}
+						else
+							cout << "Name size should be <= " << nameSize - 1;
+
+					}
+					
+
+					WriteFile(
+						hNamedPipe,
+						(char*)&newEmpl,
+						sizeof(Employee),
+						&dwBytesWritten,
+						(LPOVERLAPPED)NULL
+					);
+				}
+			}
+			else {
+				cout << "Not found an employee with id: " << cm.arg << endl;
 			}
 		}
 		else {
