@@ -27,8 +27,7 @@ static EmployeeResponse getById(Employee* employees, int amount, int id) {
 static DWORD WINAPI threadFunc(LPVOID sId) {
 	ThreadArgs args = *static_cast<ThreadArgs*>(sId);
 
-	cout << "Created a thread for a pipe: " << args.pipe << endl;
-
+	//Sleep(100);
 	DWORD dwBytesRead;
 	Command cm;
 	while (true) {
@@ -111,8 +110,6 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 			cout << "Unsupported command" << endl;
 		}
 	}
-
-	cout << "Thread finished" << endl;
 
 	return 0;
 }

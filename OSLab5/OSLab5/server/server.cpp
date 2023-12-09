@@ -69,18 +69,18 @@ int main()
 
 		processManagers[i].createApp("Client.exe");
 		threadArgs[i] = ThreadArgs{ hNamedPipe, fileMutex, fileName, employees, studentAmount};
-		threads[i] = threadManagers[i].createThread(threadFunc, (LPVOID)&threadArgs[i]);
+		
 		cout << "Waiting client #" << i + 1 << " ... ";
-
 		bool res = ConnectNamedPipe(
 			hNamedPipe,
 			(LPOVERLAPPED)NULL // sync
 		);
+		threads[i] = threadManagers[i].createThread(threadFunc, (LPVOID)&threadArgs[i]);
 
 		if (res)
-			cout << "Connection SUCCESS client #" << i + 1 << endl;
+			cout << "Connection SUCCESS" << endl;
 		else
-			cout << "Connection FAILED with client #" << i + 1 << " Error: " << GetLastError() << endl;
+			cout << "Connection FAILED; Error: " << GetLastError() << endl;
 	}
 	
 	WaitForMultipleObjects(clientAmount, threads, TRUE, INFINITE);

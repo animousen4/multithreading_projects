@@ -93,9 +93,7 @@ int main()
 
 	}
 	CloseHandle(hNamedPipe);
-
-	cout << "The data are written by the client." << endl
-		<< "Press any char to finish the client: ";
-	cin >> c;
+	
+	cout << "Server was closed" << endl;
 	return 0;
 }
