@@ -5,22 +5,23 @@
 #include "../entities/Employee.cpp";
 #include "../entities/Command.cpp"
 #include "../entities/EmployeeResponse.cpp"
+#include "../common/pipename.cpp"
 using namespace std;
+
 
 int main()
 {	
 	cout << "[Client]" << endl;
 	HANDLE hNamedPipe;
 	HANDLE fileMutex = OpenMutexA(MUTEX_ALL_ACCESS, TRUE, "fileMutex");
-	char pipeName[] = "\\\\.\\pipe\\demo_pipe";
 
-	if (!WaitNamedPipe(TEXT("\\\\.\\pipe\\demo_pipe"), NMPWAIT_WAIT_FOREVER)) {
+	if (!WaitNamedPipe(TEXT(connectionPipeName), NMPWAIT_WAIT_FOREVER)) {
 		printf("Error waiting for named pipe\n");
 		return 1;
 	}
 
 	hNamedPipe = CreateFileA(
-		pipeName,
+		connectionPipeName,
 		GENERIC_READ | GENERIC_WRITE, // write and read
 		FILE_SHARE_READ, // read
 		(LPSECURITY_ATTRIBUTES)NULL,

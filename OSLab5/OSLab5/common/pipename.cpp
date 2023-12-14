@@ -1,0 +1,1 @@
+const char* connectionPipeName = "\\\\.\\pipe\\connection_pipe";

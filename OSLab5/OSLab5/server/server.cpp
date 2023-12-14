@@ -7,6 +7,7 @@
 #include "../entities/EmployeeResponse.cpp"
 #include "thread/thread_func.cpp"
 #include "thread/thread_manager.h"
+#include "../common/pipename.cpp"
 using namespace std;
 
 int main()
@@ -56,7 +57,7 @@ int main()
 	for (int i = 0; i < clientAmount; i++) {
 
 		hNamedPipe = CreateNamedPipe(
-			"\\\\.\\pipe\\demo_pipe",
+			connectionPipeName,
 			PIPE_ACCESS_DUPLEX, // READ AND WRITE
 			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, // sync
 			PIPE_UNLIMITED_INSTANCES, // amount of channels
@@ -86,34 +87,6 @@ int main()
 	WaitForMultipleObjects(clientAmount, threads, TRUE, INFINITE);
 
 	return 0;
-	
-
-	
-
-	
-
-	
-	/*
-	ifstream binFileOpen(fileName, ios::binary);
-	Employee empl;
-	for (int i = 0; i < studentAmount; i++) {
-		binFileOpen.read((char*)(&empl), sizeof(Employee));
-		cout << empl << endl;
-	}
-
-	binFileOpen.close();
-	
-	*/
-
-	//return 0;
-
-	
-	
-
-	
-	
-
-
 
 	CloseHandle(hNamedPipe);
 
