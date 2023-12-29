@@ -13,6 +13,8 @@ struct ThreadArgs {
 	HANDLE writeResultMatrixMutex;
 	HANDLE waitEvent;
 
+	int delay = 0;
+
 
 };
 static void writeResultSync(ThreadArgs args, MatrixTask task, int res) {
@@ -30,8 +32,6 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 
 	while (true) {
 		MatrixTask task = args.matrixTaskPool->getTaskSync();
-
-		std::cout << "Calculating: " << task.m << " " << task.n << std::endl;
 		if (task.hasTask()) {
 			int res = 0;
 
@@ -39,7 +39,7 @@ static DWORD WINAPI threadFunc(LPVOID sId) {
 				res += args.inputTask->firstMatrix->matrix[task.m][i] * args.inputTask->secondMatrix->matrix[i][task.n];
 			}
 
-			std::cout << "Res of calculating: " << task.m << "x" << task.n << " - " << res << std::endl;
+			Sleep(args.delay);
 			writeResultSync(args, task, res);
 		}
 		else {

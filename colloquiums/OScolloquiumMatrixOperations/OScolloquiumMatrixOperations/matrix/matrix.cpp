@@ -8,7 +8,9 @@ public:
 	int n;
 
 	int** matrix;
-
+	Matrix() {
+	
+	}
 	Matrix(int m, int n) {
 		this->m = m;
 		this->n = n;
@@ -22,10 +24,22 @@ public:
 		matrix[m][n] = element;
 	}
 
+	
+
 	friend std::istream& operator >>(std::istream& stream, Matrix& matrix) {
 		for (int i = 0; i < matrix.m; i++)
 			for (int j = 0; j < matrix.n; j++)
 				stream >> matrix.matrix[i][j];
+
+		return stream;
+	}
+
+	friend std::ostream& operator <<(std::ostream& stream, const Matrix& matrix) {
+		for (int i = 0; i < matrix.m; i++) {
+			for (int j = 0; j < matrix.n; j++)
+				stream << matrix.matrix[i][j] << "\t";
+			stream << std::endl;
+		}
 
 		return stream;
 	}
