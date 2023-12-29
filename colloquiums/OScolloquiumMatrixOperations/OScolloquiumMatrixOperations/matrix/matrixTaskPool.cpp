@@ -23,9 +23,10 @@ public:
 		MatrixTask task;
 		if (taskStack.empty())
 			task = MatrixTask{ -1, -1 };
-		else
+		else {
 			task = taskStack.top();
-		taskStack.pop();
+			taskStack.pop();
+		}
 		ReleaseMutex(taskMutex);
 
 		return task;

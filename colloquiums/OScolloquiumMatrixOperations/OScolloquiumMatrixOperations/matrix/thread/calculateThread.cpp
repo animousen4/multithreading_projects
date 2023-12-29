@@ -10,18 +10,17 @@ struct ThreadArgs {
 	MatrixInputTask* inputTask;
 	MatrixTaskPool* matrixTaskPool;
 
-	HANDLE mutex;
+	HANDLE writeResultMatrixMutex;
 	HANDLE waitEvent;
-	HANDLE readyEvent;
 
 
 };
 static void writeResultSync(ThreadArgs args, MatrixTask task, int res) {
-	WaitForSingleObject(args.mutex, INFINITE);
+	WaitForSingleObject(args.writeResultMatrixMutex, INFINITE);
 
 	args.inputTask->resultMatrix->matrix[task.m][task.n] = res;
 
-	ReleaseMutex(args.mutex);
+	ReleaseMutex(args.writeResultMatrixMutex);
 }
 
 static DWORD WINAPI threadFunc(LPVOID sId) {
