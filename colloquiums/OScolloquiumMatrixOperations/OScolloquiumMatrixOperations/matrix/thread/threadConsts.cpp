@@ -1,0 +1,1 @@
+const int THREAD_OPERATION_DELAY = 100;

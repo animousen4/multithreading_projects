@@ -7,7 +7,7 @@ struct MatrixInputTask {
 
 	Matrix* resultMatrix;
 
-	static MatrixInputTask createTask(Matrix* first, Matrix* second) {
-		return MatrixInputTask{ first, second, new Matrix(first->m, second->n) };
+	static MatrixInputTask* createTask(Matrix* first, Matrix* second) {
+		return new MatrixInputTask{ first, second, new Matrix(first->m, second->n) };
 	}
 };

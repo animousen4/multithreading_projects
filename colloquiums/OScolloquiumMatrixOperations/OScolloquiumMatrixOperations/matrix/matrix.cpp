@@ -15,11 +15,16 @@ public:
 		this->m = m;
 		this->n = n;
 
+		initMatrix();
+	}
+
+	void initMatrix() {
+
 		matrix = new int* [m];
 		for (int i = 0; i < m; i++)
 			matrix[i] = new int[n];
 	}
-	
+
 	void setElement(int m, int n, int element) {
 		matrix[m][n] = element;
 	}
@@ -27,6 +32,8 @@ public:
 	
 
 	friend std::istream& operator >>(std::istream& stream, Matrix& matrix) {
+		stream >> matrix.m >> matrix.n;
+		matrix.initMatrix();
 		for (int i = 0; i < matrix.m; i++)
 			for (int j = 0; j < matrix.n; j++)
 				stream >> matrix.matrix[i][j];

@@ -9,8 +9,10 @@ class MatrixTaskPool {
 	std::stack<MatrixTask> taskStack;
 public:
 
-	MatrixTaskPool(HANDLE taskMutex) {
+	MatrixTaskPool(HANDLE taskMutex, int m, int n) {
 		this->taskMutex = taskMutex;
+
+		initTasks(m,n);
 
 	}
 	void addTask(MatrixTask task) {
