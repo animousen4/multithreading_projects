@@ -11,11 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: L1
-      run: cd OSLab1
-    - name: Building build files
-      run: cmake -S . -B build
     - name: Building
-      run: cmake --build build
-    - name: Running
-      run: cd build && ctest
+      run: cd OSLab1 && cmake -S . -B build && cmake --build build && cd build && ctest
+
