@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <conio.h>
 #include <Windows.h>
 
 struct Employee {
