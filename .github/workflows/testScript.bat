@@ -4,6 +4,6 @@ for /d %%i in (*) do (
 	echo "CMakeLists.txt" found in "%%i". Starting testing...
         cd "%%i"
         cd build && ctest
-        cd ..
+        cd ..\..
     )
 )
