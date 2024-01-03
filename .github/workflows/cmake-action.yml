@@ -12,5 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Building
-      run: cd OSLab1 && cmake -S . -B build && cmake --build build && cd build && ctest
+      run: cd OSLab1 && cmake -S . -B build && cmake --build build
+    - name: Running tests
+      run: cd build && ctest
 
