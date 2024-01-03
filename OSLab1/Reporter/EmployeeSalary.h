@@ -1,5 +1,5 @@
 #pragma once
-#include "../Entities/ENTITIES.H"
+#include "../Entities/Entities.h"
 
 struct EmployeeSalary {
     Employee empl;
