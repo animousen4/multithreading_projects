@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <Windows.h>
 #include "../entities/entities.h"
@@ -5,9 +6,9 @@ struct AverageArgs {
 	SizedArray* arr;
 	double* avg;
 
-	AverageArgs(SizedArray& a) : arr(&a), avg(new double(0)) {
-		
-	}
+	AverageArgs(SizedArray& a) : 
+		arr(&a),
+		avg(new double(0)) {}
 
 	void setAvg(double av) {
 		*avg = av;
@@ -39,5 +40,7 @@ public:
 		args->setAvg(sum / (double)c.n);
 
 		std::cout << "AVG: " << *args->avg << std::endl;
+
+		return 0;
 	}
 };

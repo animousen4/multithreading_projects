@@ -62,5 +62,7 @@ public:
 		args->setMinIndex(minIndex);
 
 		std::cout << "MAX: " << args->c->arr[maxIndex] << "\nMIN: " << args->c->arr[minIndex] << std::endl;
+
+		return 0;
 	};
 };
