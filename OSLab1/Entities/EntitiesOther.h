@@ -3,6 +3,7 @@
 #include <fstream>
 #include <conio.h>
 #include <Windows.h>
+
 struct Employee {
     int id;
     char name[10];
