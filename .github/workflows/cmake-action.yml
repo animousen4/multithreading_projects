@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Building
-      run: cd OSLab1 && cmake -S . -B build && cmake --build build && cd build && ctest
+    - name: Building all subprojects
+      run: .\.github\workflows\buildScript.bat
+    - name: Testing all subprojects
+      run: .\.github\workflows\testScript.bat
 
