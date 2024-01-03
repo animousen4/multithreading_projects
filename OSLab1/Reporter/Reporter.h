@@ -2,19 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-
+#include "EmployeeSalary.h"
 #include "../Entities/Entities.h"
 // reporter
 
-struct EmployeeSalary {
-    Employee empl;
-    double salary;
 
-    friend std::ostream& operator<<(std::ostream& s, const EmployeeSalary& e) {
-        s << e.empl << "\t" << e.salary;
-        return s;
-    }
-};
 int main(int argc, char* argv[])
 {
     const char* employeeFileName = argv[1];
